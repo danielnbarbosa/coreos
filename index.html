@@ -1,37 +1,37 @@
 <!DOCTYPE html>
 <html>
+
   <head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <title>Coreos by danielnbarbosa</title>
+    <meta name="description" content="Coreos : How to setup a CoreOS cluster along with some useful bells and whistles">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Coreos</title>
   </head>
 
   <body>
-    <div id="container">
-      <div class="inner">
 
-        <header>
-          <h1>Coreos</h1>
-          <h2>How to setup a CoreOS cluster along with some useful bells and whistles</h2>
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/danielnbarbosa/coreos">View on GitHub</a>
+
+          <h1 id="project_title">Coreos</h1>
+          <h2 id="project_tagline">How to setup a CoreOS cluster along with some useful bells and whistles</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/danielnbarbosa/coreos/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/danielnbarbosa/coreos/tarball/master">Download this project as a tar.gz file</a>
+            </section>
         </header>
+    </div>
 
-        <section id="downloads" class="clearfix">
-          <a href="https://github.com/danielnbarbosa/coreos/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
-          <a href="https://github.com/danielnbarbosa/coreos/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
-          <a href="https://github.com/danielnbarbosa/coreos" id="view-on-github" class="button"><span>View on GitHub</span></a>
-        </section>
-
-        <hr>
-
-        <section id="main_content">
-          <h2>
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h2>
 <a id="summary" class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h2>
 
 <ul>
@@ -39,36 +39,29 @@
 <li>Deploy monitoring and logging containers</li>
 <li>Deploy http server container</li>
 <li>Setup .bit domain</li>
-<li>Add CI/CD</li>
+<li>Add automated build, test and deploy</li>
 </ul>
 
 <h2>
 <a id="1-setup-docker" class="anchor" href="#1-setup-docker" aria-hidden="true"><span class="octicon octicon-link"></span></a>1) Setup Docker</h2>
 
-<p>install virtualbox (needed by boot2docker):
-<a href="https://www.virtualbox.org/">https://www.virtualbox.org/</a></p>
-
-<p>install vagrant (not strictly necessary but comes in handy if you want to create local clusters vs EC2):
-<a href="https://www.vagrantup.com/downloads">https://www.vagrantup.com/downloads</a></p>
-
-<p>install docker locally (assuming you are on a mac here so you’ll need use boot2docker):
-<a href="https://docs.docker.com/installation/mac/">https://docs.docker.com/installation/mac/</a></p>
-
-<p>create an account on dockerhub:
-<a href="https://hub.docker.com/">https://hub.docker.com/</a></p>
+<p>Assuming you are on OSX here.
+<a href="https://www.virtualbox.org/">Install</a> virtualbox, it's needed by boot2docker.
+<a href="https://www.vagrantup.com/downloads">Install</a> vagrant.  While not strictly necessary it comes in handy if you want to create local clusters on your workstation.
+<a href="https://docs.docker.com/installation/mac/">Install</a> docker, or rather boot2docker, if you're on OSX.
+<a href="https://hub.docker.com/">Create an account</a> on dockerhub.</p>
 
 <h2>
 <a id="2-setup-aws" class="anchor" href="#2-setup-aws" aria-hidden="true"><span class="octicon octicon-link"></span></a>2) Setup AWS</h2>
 
-<p>Docs:
-<a href="http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-set-up.html">http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-set-up.html</a></p>
+<p><a href="https://aws.amazon.com/">Create an account</a> with Amazon AWS.  You will have to pay for your usage.  A single CoreOS cluster with an ELB is costing me about $3 a day.
+Add an account via <a href="https://aws.amazon.com/iam/">IAM</a>.
+Generate an SSH keypair locally and upload the public key, or upload your existing public key:</p>
 
-<p>Get an account with Amazon AWS.  You will have to pay for your usage.  A single CoreOS cluster with an ELB is costing me about $3 a day.
-Register here: <a href="https://aws.amazon.com/">https://aws.amazon.com/</a>
-Add an account via IAM
-Generate an SSH keypair and upload the public key</p>
+<pre><code>ssh-keygen -t rsa -f id_rsa
+</code></pre>
 
-<p>Install the AWS command line tools:</p>
+<p><a href="http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-set-up.html">Install</a> the AWS command line tools.</p>
 
 <pre><code>wget https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
 unzip awscli-bundle.zip
@@ -83,15 +76,45 @@ export AWS_SECRET_ACCESS_KEY=XXXXXXXXXXXXXXXXXXXXXX
 export AWS_DEFAULT_REGION=us-west-1
 export AWS_DEFAULT_OUTPUT=text
 </code></pre>
-        </section>
 
-        <footer>
-          Coreos is maintained by <a href="https://github.com/danielnbarbosa">danielnbarbosa</a><br>
-          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
-        </footer>
+<h2>
+<a id="3-launch-cloud-formation-stack" class="anchor" href="#3-launch-cloud-formation-stack" aria-hidden="true"><span class="octicon octicon-link"></span></a>3) Launch Cloud Formation Stack</h2>
 
-        
-      </div>
+<p>Using the template provided from CoreOS, add your own parameters and fire up <a href="http://docs.aws.amazon.com/cli/latest/reference/cloudformation/create-stack.html">Cloud Formation</a>.</p>
+
+<p>Don’t forget to generate a new DiscoveryURL at <a href="https://discovery.etcd.io/new">https://discovery.etcd.io/new</a>
+The following parameters are passed to the template, if you want to change them:</p>
+
+<ul>
+<li>DiscoveryURL</li>
+<li>InstanceType</li>
+<li>KeyPair</li>
+</ul>
+
+<p>The template sets the following defaults.  If you want something else, <a href="https://coreos.com/docs/running-coreos/cloud-providers/ec2/">other templates</a> are available from CoreOS.</p>
+
+<ul>
+<li>CoreOS channel: alpha</li>
+<li>PV vs HVM: HVM</li>
+<li>Region: us-west-1</li>
+</ul>
+
+<pre><code>aws cloudformation create-stack --stack-name CoreOS-alpha --template-url https://s3.amazonaws.com/coreos.com/dist/aws/coreos-alpha-hvm.template --parameters ParameterKey=DiscoveryURL,ParameterValue=https://discovery.etcd.io/0ffffffffffffffffffffffffffff,UsePreviousValue=true ParameterKey=InstanceType,ParameterValue=t2.small,UsePreviousValue=true ParameterKey=KeyPair,ParameterValue=daniel,UsePreviousValue=true
+</code></pre>
+
+<p>Watch the magic happen in your AWS web console.  Once created, adjust ASG Max instances to 3 (to prevent ballooning resource use).</p>
+      </section>
     </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Coreos maintained by <a href="https://github.com/danielnbarbosa">danielnbarbosa</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
   </body>
 </html>
