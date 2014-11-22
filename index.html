@@ -16,7 +16,7 @@
     <div class="wrapper">
       <header>
         <h1>coreos</h1>
-        <p>How to setup a CoreOS cluster on EC2 and do some cool stuff with it</p>
+        <p>How to setup a CoreOS cluster on EC2 with metrics, logging and continuous deployment</p>
 
         <p class="view"><a href="https://github.com/danielnbarbosa/coreos">View the Project on GitHub <small>danielnbarbosa/coreos</small></a></p>
 
@@ -303,7 +303,7 @@ i-8e1111d3
 <h3>
 <a id="upload-and-start-nokebit-http-service" class="anchor" href="#upload-and-start-nokebit-http-service" aria-hidden="true"><span class="octicon octicon-link"></span></a>Upload and start noke.bit http service</h3>
 
-<p>Now for the good part, an actual website.  Keep in mind the "Docker Way" (TM) is one service per container and that service runs in the foreground.  That's why if you follow the Dockerfile you'll see that nginx is set to 'daemon off'.</p>
+<p>Now for the good part, an actual website.  Keep in mind the "Docker Way" (TM) is one service per container and that service runs in the foreground.  That's why if you follow the Dockerfile you'll see that nginx is set to 'daemon off'.  Also take note of how this container uses <a href="https://docs.docker.com/userguide/dockerlinks/">'--link'</a> to link to the loggly logging container.  Using environment variables passed from the loggly container, nginx configures it's logs to be sent via syslog to the loggly container.</p>
 
 <ul>
 <li><p>Fork <a href="https://github.com/danielnbarbosa/docker-noke-nginx">danielnbarbosa/docker-noke-nginx</a> repo via the web UI</p></li>
