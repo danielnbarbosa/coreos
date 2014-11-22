@@ -57,13 +57,13 @@
 <h3>
 <a id="setup-docker" class="anchor" href="#setup-docker" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup Docker</h3>
 
-<p>Assuming you are on OSX here, linux folks can skip the boot2docker piece:</p>
+<p>Assuming you are on OSX here:</p>
 
 <ul>
 <li>
 <a href="https://www.virtualbox.org/">Install</a> virtualbox, it's needed by boot2docker.</li>
 <li>
-<a href="https://docs.docker.com/installation/mac/">Install</a> docker, (and boot2docker if you're on OSX).</li>
+<a href="https://docs.docker.com/installation/mac/">Install</a> docker and boot2docker.</li>
 <li>
 <a href="https://hub.docker.com/">Create an account</a> on dockerhub.</li>
 </ul>
@@ -387,6 +387,7 @@ fleetctl start noke-nginx@{1..3}.service
 
 <ul>
 <li>add project and follow repo in circle CI</li>
+<li>add private key (generated earlier) to circleCI project</li>
 <li>add dockerhub env vars to circeCI project:</li>
 </ul>
 </li>
@@ -395,9 +396,6 @@ fleetctl start noke-nginx@{1..3}.service
 <pre><code>    cat ~/.dockercfg
     DOCKER_EMAIL=XXXXXXXXXXXX
     DOCKER_AUTH=XXXXXXXXXXXXX
-</code></pre>
-
-<pre><code>* add private key (generated earlier) to circleCI project
 </code></pre>
 
 <ul>
