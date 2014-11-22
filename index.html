@@ -1,38 +1,34 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-
   <head>
-    <meta charset='utf-8'>
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Coreos : How to setup a CoreOS cluster along with some useful bells and whistles">
+    <title>Coreos by danielnbarbosa</title>
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-    <title>Coreos</title>
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
   </head>
-
   <body>
-
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/danielnbarbosa/coreos">View on GitHub</a>
-
-          <h1 id="project_title">Coreos</h1>
-          <h2 id="project_tagline">How to setup a CoreOS cluster along with some useful bells and whistles</h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/danielnbarbosa/coreos/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/danielnbarbosa/coreos/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h2>
-<a id="summary" class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h2>
+    <div class="wrapper">
+      <header>
+        <h1>Coreos</h1>
+        <p>How to setup a CoreOS cluster along with some useful bells and whistles</p>
+        <p class="view"><a href="https://github.com/danielnbarbosa/coreos">View the Project on GitHub <small>danielnbarbosa/coreos</small></a></p>
+        <ul>
+          <li><a href="https://github.com/danielnbarbosa/coreos/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/danielnbarbosa/coreos/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/danielnbarbosa/coreos">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h3>
+<a id="summary" class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h3>
 
 <ul>
 <li>Setup 3 node CoreOS cluster via Cloud Formation fronted by an ELB</li>
@@ -42,17 +38,17 @@
 <li>Add automated build, test and deploy</li>
 </ul>
 
-<h2>
-<a id="1-setup-docker" class="anchor" href="#1-setup-docker" aria-hidden="true"><span class="octicon octicon-link"></span></a>1) Setup Docker</h2>
+<h3>
+<a id="setup-docker" class="anchor" href="#setup-docker" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup Docker</h3>
 
 <p>Assuming you are on OSX here.
-<a href="https://www.virtualbox.org/">Install</a> virtualbox, it's needed by boot2docker.
-<a href="https://www.vagrantup.com/downloads">Install</a> vagrant.  While not strictly necessary it comes in handy if you want to create local clusters on your workstation.
-<a href="https://docs.docker.com/installation/mac/">Install</a> docker, or rather boot2docker, if you're on OSX.
-<a href="https://hub.docker.com/">Create an account</a> on dockerhub.</p>
+1. <a href="https://www.virtualbox.org/">Install</a> virtualbox, it's needed by boot2docker.
+2. <a href="https://www.vagrantup.com/downloads">Install</a> vagrant.  While not strictly necessary it comes in handy if you want to create local clusters on your workstation.
+3. <a href="https://docs.docker.com/installation/mac/">Install</a> docker, or rather boot2docker, if you're on OSX.
+4. <a href="https://hub.docker.com/">Create an account</a> on dockerhub.</p>
 
-<h2>
-<a id="2-setup-aws" class="anchor" href="#2-setup-aws" aria-hidden="true"><span class="octicon octicon-link"></span></a>2) Setup AWS</h2>
+<h3>
+<a id="setup-aws" class="anchor" href="#setup-aws" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup AWS</h3>
 
 <p><a href="https://aws.amazon.com/">Create an account</a> with Amazon AWS.  You will have to pay for your usage.  A single CoreOS cluster with an ELB is costing me about $3 a day.
 Add an account via <a href="https://aws.amazon.com/iam/">IAM</a>.
@@ -77,8 +73,8 @@ export AWS_DEFAULT_REGION=us-west-1
 export AWS_DEFAULT_OUTPUT=text
 </code></pre>
 
-<h2>
-<a id="3-launch-cloud-formation-stack" class="anchor" href="#3-launch-cloud-formation-stack" aria-hidden="true"><span class="octicon octicon-link"></span></a>3) Launch Cloud Formation Stack</h2>
+<h3>
+<a id="launch-cloud-formation-stack" class="anchor" href="#launch-cloud-formation-stack" aria-hidden="true"><span class="octicon octicon-link"></span></a>Launch Cloud Formation Stack</h3>
 
 <p>Using the template provided from CoreOS, add your own parameters and fire up <a href="http://docs.aws.amazon.com/cli/latest/reference/cloudformation/create-stack.html">Cloud Formation</a>.</p>
 
@@ -105,16 +101,11 @@ The following parameters are passed to the template, if you want to change them:
 <p>Watch the magic happen in your AWS web console.  Once created, adjust ASG Max instances to 3 (to prevent ballooning resource use).</p>
       </section>
     </div>
-
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Coreos maintained by <a href="https://github.com/danielnbarbosa">danielnbarbosa</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
-
+    <footer>
+      <p>Project maintained by <a href="https://github.com/danielnbarbosa">danielnbarbosa</a></p>
+      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
+    </footer>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
     
-
   </body>
 </html>
