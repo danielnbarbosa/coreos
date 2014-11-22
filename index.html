@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Coreos by danielnbarbosa</title>
+    <title>coreos by danielnbarbosa</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
@@ -15,7 +15,7 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1>Coreos</h1>
+        <h1>coreos</h1>
         <p>How to setup a CoreOS cluster on EC2 and do some cool stuff with it</p>
 
         <p class="view"><a href="https://github.com/danielnbarbosa/coreos">View the Project on GitHub <small>danielnbarbosa/coreos</small></a></p>
@@ -29,7 +29,21 @@
       </header>
       <section>
         <h3>
+<a id="intro" class="anchor" href="#intro" aria-hidden="true"><span class="octicon octicon-link"></span></a>Intro</h3>
+
+<p>Docker is a revolution.  If you believe that, then the next question is how will you manage all these containers?  CoreOS is one answer.  The best way to learn something is get your hands dirty and play with it.  If you follow along here you will get more familiar with thinking about a world made only of containers and learn a few things along the way, like:</p>
+
+<ul>
+<li>Docker: docker boot2docker dockerhub btrfs</li>
+<li>CoreOS: systemd etcd fleet</li>
+<li>AWS: CloudFormation ELB ASG SecurityGroups</li>
+<li>3rd Party: DataDog Loggly CircleCI</li>
+</ul>
+
+<h3>
 <a id="summary" class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h3>
+
+<p>Here's a high level view of what we'll be doing: </p>
 
 <ul>
 <li>Setup 3 node CoreOS cluster via Cloud Formation fronted by an ELB</li>
@@ -42,7 +56,7 @@
 <h3>
 <a id="setup-docker" class="anchor" href="#setup-docker" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup Docker</h3>
 
-<p>Assuming you are on OSX here.</p>
+<p>Assuming you are on OSX here, if linux you can skip the boot2docker piece:</p>
 
 <ul>
 <li>
@@ -58,7 +72,7 @@
 
 <ul>
 <li>
-<a href="https://aws.amazon.com/">Create an account</a> with Amazon AWS.  You will have to pay for your usage.  A single CoreOS cluster with an ELB is costing me about $3 a day.</li>
+<a href="https://aws.amazon.com/">Create an account</a> with Amazon AWS.  You will have to pay for your usage.  A single CoreOS cluster with an ELB is costing me about $3 a day.   If you already have an account make sure it is Default-VPC and not EC2-Classic or the the CloudFormation template may not work.</li>
 <li>Add an account via <a href="https://aws.amazon.com/iam/">IAM</a>.</li>
 <li>Generate an SSH keypair locally and upload the public key, or upload your existing public key:</li>
 </ul>
@@ -88,9 +102,9 @@ export AWS_DEFAULT_OUTPUT=text
 </code></pre>
 
 <h3>
-<a id="launch-cloud-formation-stack" class="anchor" href="#launch-cloud-formation-stack" aria-hidden="true"><span class="octicon octicon-link"></span></a>Launch Cloud Formation Stack</h3>
+<a id="launch-cloudformation-stack" class="anchor" href="#launch-cloudformation-stack" aria-hidden="true"><span class="octicon octicon-link"></span></a>Launch CloudFormation Stack</h3>
 
-<p>Using the template provided from CoreOS, add your own parameters and fire up <a href="http://docs.aws.amazon.com/cli/latest/reference/cloudformation/create-stack.html">Cloud Formation</a>.</p>
+<p>Using the template provided from CoreOS, modify the necessary parameters and fire up <a href="http://docs.aws.amazon.com/cli/latest/reference/cloudformation/create-stack.html">CloudFormation</a>.</p>
 
 <p>Don’t forget to <a href="https://discovery.etcd.io/new">generate</a> a new DiscoveryURL.
 The following parameters are passed to the template:</p>
@@ -157,7 +171,7 @@ fleetctl list-machines
 <h3>
 <a id="upload-and-start-datadog-monitoring-service" class="anchor" href="#upload-and-start-datadog-monitoring-service" aria-hidden="true"><span class="octicon octicon-link"></span></a>Upload and start DataDog monitoring service</h3>
 
-<p>Datadog providers a <a href="https://www.datadoghq.com/2014/08/monitor-coreos-scale-datadog/">container</a> for setting up monitoring.  This is a container that runs on your CoreOS hosts.  You should never need to install additional tools on the host itself.</p>
+<p>Datadog providers a <a href="https://www.datadoghq.com/2014/08/monitor-coreos-scale-datadog/">container</a> for setting up host monitoring.  This is a container that runs on your CoreOS hosts.  You should never need to install additional tools on the host itself.</p>
 
 <ul>
 <li><p><a href="https://www.datadoghq.com/">Sign up</a> for datadog.  It’s free.</p></li>
@@ -191,6 +205,8 @@ fleetctl start dd-agent@{1..3}.service
 <a id="upload-and-start-loggly-log-service" class="anchor" href="#upload-and-start-loggly-log-service" aria-hidden="true"><span class="octicon octicon-link"></span></a>Upload and start Loggly log service</h3>
 
 <p>Loggly also offers a <a href="https://www.loggly.com/blog/centralize-logs-docker-containers/">container</a> for centralized logging.  This is just a simple rsyslogd that fowards the logs on to loggly.</p>
+
+<p>The "Docker Way" (TM) says that you should never install more than one service in a container.  Containers are not VMs.  They wrap processes.  This means we won't be adding agents inside of the container for helping out with sending logs to a central server.  Instead we will install a logging container that other containers will forward their logs to.</p>
 
 <p><a href="https://www.loggly.com/">Sign up</a> for loggly.  Also free.</p>
 
@@ -257,6 +273,8 @@ i-8e1111d3
 
 <h3>
 <a id="upload-and-start-nokebit-http-service" class="anchor" href="#upload-and-start-nokebit-http-service" aria-hidden="true"><span class="octicon octicon-link"></span></a>Upload and start noke.bit http service</h3>
+
+<p>Now for good part, an actual website.  Keep in mind the "Docker Way" (TM) is one service per container and that service runs in the foreground.  That's why if you follow the Dockerfile you'll see that nginx is set to 'daemon off'.</p>
 
 <p>Fork danielnbarbosa/docker-noke-nginx repo via the web UI</p>
 
