@@ -55,9 +55,7 @@
 </ul>
 
 <h3>
-<a id="setup-docker" class="anchor" href="#setup-docker" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup Docker</h3>
-
-<p>Assuming you are on OSX here:</p>
+<a id="setup-docker-assuming-osx" class="anchor" href="#setup-docker-assuming-osx" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup Docker (assuming OSX)</h3>
 
 <ul>
 <li>
@@ -184,6 +182,8 @@ fleetctl list-machines
 
 <p>Datadog provides a <a href="https://www.datadoghq.com/2014/08/monitor-coreos-scale-datadog/">container</a> for setting up host monitoring.  This is a container that runs on your CoreOS hosts.  You should never need to install additional tools on the host itself.  The container monitors resources on the host by inspecting the local /proc filesystem.  Normally containers are not allowed to see outside their world, but if run in '--privileged' mode this can be overridden.</p>
 
+<p>This is also a good time to learn about <a href="https://coreos.com/docs/launching-containers/launching/fleet-unit-files/">fleet unit files</a>, which are based on <a href="https://coreos.com/docs/launching-containers/launching/getting-started-with-systemd/">systemd</a>.</p>
+
 <ul>
 <li><p><a href="https://www.datadoghq.com/">Sign up</a> for datadog.  It’s free.</p></li>
 <li><p>Put your personal API key into etcd (run from any host):</p></li>
@@ -197,7 +197,8 @@ fleetctl list-machines
 <li><p>Replace my dockerhub id with your own:</p></li>
 </ul>
 
-<pre><code>sed -i -e 's/danielnbarbosa/YOUR_DOCKERHUB_ID/g'
+<pre><code>sed -i -e "s/danielnbarbosa/YOUR_DOCKERHUB_ID/g" *
+rm *-e
 </code></pre>
 
 <ul>
@@ -206,6 +207,13 @@ fleetctl list-machines
 
 <pre><code>fleetctl submit dd-agent@.service
 fleetctl start dd-agent@{1..3}.service
+</code></pre>
+
+<ul>
+<li>Verify containers started.  There should be one on each host.</li>
+</ul>
+
+<pre><code>fleetctl list-units
 </code></pre>
 
 <ul>
@@ -232,7 +240,8 @@ fleetctl start dd-agent@{1..3}.service
 <li><p>Replace my dockerhub id with your own:</p></li>
 </ul>
 
-<pre><code>sed -i -e 's/danielnbarbosa/YOUR_DOCKERHUB_ID/g' *
+<pre><code>sed -i -e "s/danielnbarbosa/YOUR_DOCKERHUB_ID/g" *
+rm *-e
 </code></pre>
 
 <ul>
@@ -241,6 +250,13 @@ fleetctl start dd-agent@{1..3}.service
 
 <pre><code>fleetctl submit loggly-agent@.service
 fleetctl start loggly-agent@{1..3}.service
+</code></pre>
+
+<ul>
+<li>Verify containers started.  There should be one on each host.</li>
+</ul>
+
+<pre><code>fleetctl list-units
 </code></pre>
 
 <ul>
@@ -265,7 +281,7 @@ fleetctl start loggly-agent@{1..3}.service
 </code></pre>
 
 <ul>
-<li>Create the ELB:</li>
+<li>Create the ELB passing in the security group id from above:</li>
 </ul>
 
 <pre><code>aws elb create-load-balancer --load-balancer-name=lb-coreos-alpha --listeners Protocol=HTTP,LoadBalancerPort=80,InstanceProtocol=HTTP,InstancePort=80 --availability-zones us-west-1a us-west-1b --security-groups=sg-111aaa5c
@@ -275,14 +291,14 @@ fleetctl start loggly-agent@{1..3}.service
 <li>Get the 3 instances:</li>
 </ul>
 
-<pre><code>aws ec2 describe-instances --filter Name=tag:Name,Values=CoreOS-stable | grep INSTANCES | awk '{print $8}'
+<pre><code>aws ec2 describe-instances --filter Name=tag:Name,Values=CoreOS-alpha | grep INSTANCES | awk '{print $8}'
 i-8e1111d1
 i-8e1111d2
 i-8e1111d3
 </code></pre>
 
 <ul>
-<li>Register instances with the ELB:</li>
+<li>Register instances with the ELB ids from above:</li>
 </ul>
 
 <pre><code>aws elb register-instances-with-load-balancer --load-balancer-name lb-coreos-alpha --instances i-8e1111d1i-8e1111d2i-8e1111d3
@@ -310,7 +326,8 @@ i-8e1111d3
 <li><p>Replace my dockerhub id with your own:</p></li>
 </ul>
 
-<pre><code>sed -i -e 's/danielnbarbosa/YOUR_DOCKERHUB_ID/g'
+<pre><code>sed -i -e "s/danielnbarbosa/YOUR_DOCKERHUB_ID/g" *
+rm *-e
 </code></pre>
 
 <ul>
@@ -319,6 +336,13 @@ i-8e1111d3
 
 <pre><code>fleetctl submit noke-nginx@.service
 fleetctl start noke-nginx@{1..3}.service
+</code></pre>
+
+<ul>
+<li>Verify containers started.  There should be one on each host.</li>
+</ul>
+
+<pre><code>fleetctl list-units
 </code></pre>
 
 <h3>
