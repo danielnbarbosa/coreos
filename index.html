@@ -31,14 +31,14 @@
         <h3>
 <a id="intro" class="anchor" href="#intro" aria-hidden="true"><span class="octicon octicon-link"></span></a>Intro</h3>
 
-<p>Docker is a revolution.  If you believe that, then the next question is how will you manage all these containers?  CoreOS is one answer.  The best way to learn something is get your hands dirty and play with it.  If you follow along here you will get more familiar with thinking about a world made only of containers and learn a few things along the way, like:</p>
+<p><a href="https://www.docker.com/">Docker</a> is a revolution.  If you believe that, then the next question is how will you manage all these containers?  <a href="https://coreos.com/">CoreOS</a> is one answer.  The best way to learn something is get your hands dirty and play with it.  If you follow along here you will get more familiar with thinking about a world made only of containers and learn a few things along the way, like:</p>
 
 <ul>
-<li>Docker: docker boot2docker dockerhub btrfs</li>
-<li>CoreOS: systemd etcd fleet</li>
-<li>AWS: CloudFormation ELB ASG SecurityGroups</li>
-<li>3rd Party: DataDog Loggly CircleCI</li>
-<li>Bitcoin: bitcoin namecoin blockchain</li>
+<li>Docker: docker, boot2docker, dockerhub, btrfs</li>
+<li>CoreOS: systemd, etcd, fleet</li>
+<li>AWS: CloudFormation, ELB, ASG, SecurityGroups</li>
+<li>3rd Party: DataDog, Loggly, CircleCI</li>
+<li>Bitcoin: bitcoin, namecoin, blockchain</li>
 </ul>
 
 <h3>
@@ -439,8 +439,6 @@ fleetctl start noke-nginx@{1..3}.service
 <li>Test a front-end site build + deploy using the docker-noke-nginx repo.  Modify a file or two in the repo, then watch CircleCI build and deploy the container without taking the site down.  Sweet!</li>
 </ul>
 
-<p>Modify a file in the repo (like the IP address hardcoded into deploy.sh, cough):</p>
-
 <pre><code>    cd .../docker-noke-nginx
     vi rolling_deploy.sh
     vi Dockerfile
@@ -449,6 +447,11 @@ fleetctl start noke-nginx@{1..3}.service
     git commit -m “testing circleci"
     git push
 </code></pre>
+
+<h3>
+<a id="conclusion" class="anchor" href="#conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion</h3>
+
+<p>I had a lot of fun playing around with all these technologies.  Things are moving pretty fast right now in both the docker and the bitcoin ecosystems.  If you have questions or comments on anything here or anything DevOps or Bitcoin related you can find me on twitter <a href="https://github.com/danielnbarbosa" class="user-mention">@danielnbarbosa</a>.</p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/danielnbarbosa">danielnbarbosa</a></p>
