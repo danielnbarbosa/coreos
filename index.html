@@ -423,30 +423,32 @@ fleetctl start noke-nginx@{1..3}.service
 </code></pre>
 
 <ul>
-<li>Test an infrastructure build/deploy using docker-dd-agent repo:</li>
+<li>Test an infrastructure build + deploy using the docker-dd-agent repo.  Modify a file or two in the repo (like the IP address hardcoded into deploy.sh, cough), then watch CircleCI build and deploy the container:</li>
 </ul>
 
-<p>Modify a file in the repo (like the IP address hardcoded into deploy.sh, cough):</p>
+<pre><code>    cd .../docker-dd-agent
+    vi deploy.sh
+    vi Dockerfile
 
-<pre><code>    git add .
+    git add .
     git commit -m “testing circleci"
     git push
 </code></pre>
-
-<p>Watch CircleCI build and deploy the container.</p>
 
 <ul>
-<li>Test a front-end site buid/deploy using docker-noke-nginx:</li>
+<li>Test a front-end site build + deploy using the docker-noke-nginx repo.  Modify a file or two in the repo, then watch CircleCI build and deploy the container without taking the site down.  Sweet!</li>
 </ul>
 
 <p>Modify a file in the repo (like the IP address hardcoded into deploy.sh, cough):</p>
 
-<pre><code>    git add .
+<pre><code>    cd .../docker-noke-nginx
+    vi rolling_deploy.sh
+    vi Dockerfile
+
+    git add .
     git commit -m “testing circleci"
     git push
 </code></pre>
-
-<p>Watch CircleCI build and deploy the container without taking the site down.  Sweet!</p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/danielnbarbosa">danielnbarbosa</a></p>
