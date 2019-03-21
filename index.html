@@ -3,13 +3,11 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Coreos by danielnbarbosa</title>
+    <title>coreos by danielnbarbosa</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="javascripts/scale.fix.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -17,9 +15,12 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1>Coreos</h1>
-        <p>How to setup a CoreOS cluster along with some useful bells and whistles</p>
+        <h1>coreos</h1>
+        <p>How to setup a CoreOS cluster on EC2 with metrics, logging and continuous deployment</p>
+
         <p class="view"><a href="https://github.com/danielnbarbosa/coreos">View the Project on GitHub <small>danielnbarbosa/coreos</small></a></p>
+
+
         <ul>
           <li><a href="https://github.com/danielnbarbosa/coreos/zipball/master">Download <strong>ZIP File</strong></a></li>
           <li><a href="https://github.com/danielnbarbosa/coreos/tarball/master">Download <strong>TAR Ball</strong></a></li>
@@ -28,7 +29,22 @@
       </header>
       <section>
         <h3>
+<a id="intro" class="anchor" href="#intro" aria-hidden="true"><span class="octicon octicon-link"></span></a>Intro</h3>
+
+<p><a href="https://www.docker.com/">Docker</a> is a big step forward in bringing sanity to application deployment.  The next question is how will you manage all these containers?  <a href="https://coreos.com/">CoreOS</a> is one answer.  The best way to learn something is get your hands dirty and play with it.  If you follow along here you will get more familiar with thinking about a world made only of containers and learn a few things along the way, like:</p>
+
+<ul>
+<li>Docker: docker, boot2docker, dockerhub, btrfs</li>
+<li>CoreOS: systemd, etcd, fleet</li>
+<li>AWS: CloudFormation, ELB, ASG, SecurityGroups</li>
+<li>3rd Party: DataDog, Loggly, CircleCI</li>
+<li>Bitcoin: bitcoin, namecoin, blockchain</li>
+</ul>
+
+<h3>
 <a id="summary" class="anchor" href="#summary" aria-hidden="true"><span class="octicon octicon-link"></span></a>Summary</h3>
+
+<p>Here's a high level view of what we'll be doing: </p>
 
 <ul>
 <li>Setup 3 node CoreOS cluster via Cloud Formation fronted by an ELB</li>
@@ -39,32 +55,43 @@
 </ul>
 
 <h3>
-<a id="setup-docker" class="anchor" href="#setup-docker" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup Docker</h3>
+<a id="setup-docker-assuming-osx" class="anchor" href="#setup-docker-assuming-osx" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup Docker (assuming OSX)</h3>
 
-<p>Assuming you are on OSX here.
-1. <a href="https://www.virtualbox.org/">Install</a> virtualbox, it's needed by boot2docker.
-2. <a href="https://www.vagrantup.com/downloads">Install</a> vagrant.  While not strictly necessary it comes in handy if you want to create local clusters on your workstation.
-3. <a href="https://docs.docker.com/installation/mac/">Install</a> docker, or rather boot2docker, if you're on OSX.
-4. <a href="https://hub.docker.com/">Create an account</a> on dockerhub.</p>
+<ul>
+<li>
+<a href="https://www.virtualbox.org/">Install</a> virtualbox, it's needed by boot2docker.</li>
+<li>
+<a href="https://docs.docker.com/installation/mac/">Install</a> docker and boot2docker.</li>
+<li>
+<a href="https://hub.docker.com/">Create an account</a> on dockerhub.</li>
+</ul>
 
 <h3>
 <a id="setup-aws" class="anchor" href="#setup-aws" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup AWS</h3>
 
-<p><a href="https://aws.amazon.com/">Create an account</a> with Amazon AWS.  You will have to pay for your usage.  A single CoreOS cluster with an ELB is costing me about $3 a day.
-Add an account via <a href="https://aws.amazon.com/iam/">IAM</a>.
-Generate an SSH keypair locally and upload the public key, or upload your existing public key:</p>
+<ul>
+<li>
+<a href="https://aws.amazon.com/">Create an account</a> with Amazon AWS.  You will have to pay for your usage.  A single CoreOS cluster with an ELB is costing me about $3 a day.</li>
+<li>Add an account via <a href="https://aws.amazon.com/iam/">IAM</a> and save your AWS creds.</li>
+<li>Generate an SSH keypair locally and upload the public key, or upload your existing public key:</li>
+</ul>
 
 <pre><code>ssh-keygen -t rsa -f id_rsa
 </code></pre>
 
-<p><a href="http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-set-up.html">Install</a> the AWS command line tools.</p>
+<ul>
+<li>
+<a href="http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-set-up.html">Install</a> the AWS command line tools:</li>
+</ul>
 
 <pre><code>wget https://s3.amazonaws.com/aws-cli/awscli-bundle.zip
 unzip awscli-bundle.zip
 sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws
 </code></pre>
 
-<p>Add necessary environment variables to your ~/.bash_profile:</p>
+<ul>
+<li>Add necessary environment variables to your ~/.bash_profile:</li>
+</ul>
 
 <pre><code># AWS creds
 export AWS_ACCESS_KEY_ID=XXXXXXXXXXXXXX
@@ -74,20 +101,19 @@ export AWS_DEFAULT_OUTPUT=text
 </code></pre>
 
 <h3>
-<a id="launch-cloud-formation-stack" class="anchor" href="#launch-cloud-formation-stack" aria-hidden="true"><span class="octicon octicon-link"></span></a>Launch Cloud Formation Stack</h3>
+<a id="launch-cloudformation-stack" class="anchor" href="#launch-cloudformation-stack" aria-hidden="true"><span class="octicon octicon-link"></span></a>Launch CloudFormation Stack</h3>
 
-<p>Using the template provided from CoreOS, add your own parameters and fire up <a href="http://docs.aws.amazon.com/cli/latest/reference/cloudformation/create-stack.html">Cloud Formation</a>.</p>
+<p>Using the template provided from CoreOS, modify the necessary parameters and fire up <a href="http://docs.aws.amazon.com/cli/latest/reference/cloudformation/create-stack.html">CloudFormation</a>.  If you already had an AWS account make sure it is Default-VPC and not EC2-Classic or the the CloudFormation template may not work.</p>
 
-<p>Don’t forget to generate a new DiscoveryURL at <a href="https://discovery.etcd.io/new">https://discovery.etcd.io/new</a>
-The following parameters are passed to the template, if you want to change them:</p>
+<p>The following parameters are passed to the template.  Don’t forget to <a href="https://discovery.etcd.io/new">generate</a> a new <a href="https://coreos.com/docs/cluster-management/setup/cluster-discovery/">DiscoveryURL</a>:  </p>
 
 <ul>
-<li>DiscoveryURL</li>
-<li>InstanceType</li>
-<li>KeyPair</li>
+<li>DiscoveryURL: used by etcd to first discover peers.</li>
+<li>InstanceType: EC2 instance type.</li>
+<li>KeyPair: the name of the SSH keypair you uploaded to AWS.</li>
 </ul>
 
-<p>The template sets the following defaults.  If you want something else, <a href="https://coreos.com/docs/running-coreos/cloud-providers/ec2/">other templates</a> are available from CoreOS.</p>
+<p>The template sets the following defaults.  If you want something else, <a href="https://coreos.com/docs/running-coreos/cloud-providers/ec2/">other templates</a> are available from CoreOS:</p>
 
 <ul>
 <li>CoreOS channel: alpha</li>
@@ -99,13 +125,350 @@ The following parameters are passed to the template, if you want to change them:
 </code></pre>
 
 <p>Watch the magic happen in your AWS web console.  Once created, adjust ASG Max instances to 3 (to prevent ballooning resource use).</p>
+
+<h3>
+<a id="verify-connectivity" class="anchor" href="#verify-connectivity" aria-hidden="true"><span class="octicon octicon-link"></span></a>Verify connectivity</h3>
+
+<p>Now you should have 3 EC2 instances in an ASG, along with a SecurityGroup.  Let's login to the hosts and <a href="https://coreos.com/docs/launching-containers/launching/fleet-using-the-client/#exploring-the-cluster">explore the cluster</a> a little.</p>
+
+<ul>
+<li>Get the public IPs of the instances:</li>
+</ul>
+
+<pre><code>aws ec2 describe-instances --filter Name=tag:Name,Values=CoreOS-alpha | grep ASSOCIATION | sort | uniq | awk '{print $NF}'
+111.111.111.200
+111.111.111.201
+111.111.111.202
+</code></pre>
+
+<ul>
+<li>SSH to the public IP of each instance.  Try out some <a href="https://coreos.com/docs/launching-containers/launching/launching-containers-fleet/">fleetctl</a> and <a href="https://coreos.com/docs/distributed-configuration/getting-started-with-etcd/">etcdctl</a> commands.</li>
+</ul>
+
+<p>fleetctl communicates over SSH so using ‘-A' allows for forwarding ssh connections, useful for when running fleetctl on the hosts.  etcd acts a global configuration database that you can use for all sorts of things.  Try setting and getting some keys and watching them instantly appear on other nodes.</p>
+
+<pre><code>ssh -A core@111.111.111.200
+fleetctl list-machines
+etcdctl ls
+</code></pre>
+
+<ul>
+<li><p><a href="https://github.com/coreos/fleet/releases">Download</a> fleetctl to your local workstation</p></li>
+<li><p>Load your private key into ssh-agent (needed to make remote fleetctl work as it operates over SSH):</p></li>
+</ul>
+
+<pre><code>ssh-add ~/.ssh/id_rsa
+ssh-add -l
+</code></pre>
+
+<ul>
+<li>Add the IP of one of the hosts to your local ~/.bash_profile for remote comms:</li>
+</ul>
+
+<pre><code># Connect to remote CoreOS on EC2
+export FLEETCTL_TUNNEL=111.111.111.200:22
+</code></pre>
+
+<ul>
+<li>source and verify:</li>
+</ul>
+
+<pre><code>.~/.bash_profile
+fleetctl list-machines
+</code></pre>
+
+<h3>
+<a id="upload-and-start-datadog-monitoring-service" class="anchor" href="#upload-and-start-datadog-monitoring-service" aria-hidden="true"><span class="octicon octicon-link"></span></a>Upload and start DataDog monitoring service</h3>
+
+<p>Datadog provides a <a href="https://www.datadoghq.com/2014/08/monitor-coreos-scale-datadog/">container</a> for setting up host monitoring.  This is a container that runs on your CoreOS hosts.  You should never need to install additional tools on the host itself.  The container monitors resources on the host by inspecting the local /proc filesystem.  Normally containers are not allowed to see outside their world, but if run in '--privileged' mode this can be overridden.</p>
+
+<p>This is also a good time to learn about <a href="https://coreos.com/docs/launching-containers/launching/fleet-unit-files/">fleet unit files</a>, which are based on <a href="https://coreos.com/docs/launching-containers/launching/getting-started-with-systemd/">systemd</a>.</p>
+
+<ul>
+<li><p><a href="https://www.datadoghq.com/">Sign up</a> for datadog.  It’s free.</p></li>
+<li><p>Put your personal API key into etcd (run from any host):</p></li>
+</ul>
+
+<pre><code>etcdctl set /ddapikey XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+</code></pre>
+
+<ul>
+<li><p>Fork <a href="https://github.com/danielnbarbosa/docker-dd-agent">danielnbarbosa/docker-dd-agent</a> github repo via the web UI.</p></li>
+<li><p>Replace my dockerhub id with your own:</p></li>
+</ul>
+
+<pre><code>sed -i -e "s/danielnbarbosa/YOUR_DOCKERHUB_ID/g" *
+rm *-e
+</code></pre>
+
+<ul>
+<li>Upload and start fleet units:</li>
+</ul>
+
+<pre><code>fleetctl submit dd-agent@.service
+fleetctl start dd-agent@{1..3}.service
+</code></pre>
+
+<ul>
+<li>Verify containers started.  There should be one on each host.</li>
+</ul>
+
+<pre><code>fleetctl list-units
+</code></pre>
+
+<ul>
+<li>Verify metrics are flowing in the DataDog web UI.</li>
+</ul>
+
+<h3>
+<a id="upload-and-start-loggly-log-service" class="anchor" href="#upload-and-start-loggly-log-service" aria-hidden="true"><span class="octicon octicon-link"></span></a>Upload and start Loggly log service</h3>
+
+<p>Loggly also offers a <a href="https://www.loggly.com/blog/centralize-logs-docker-containers/">container</a> for centralized logging.  This is just a simple rsyslogd service that fowards the logs on to loggly.</p>
+
+<p>The "Docker Way" (TM) says that you should never install more than one service in a container.  Containers are not VMs.  They wrap processes.  This means we won't be adding agents inside of the container for helping out with sending logs to a central server.  Instead we will install a logging container that other containers will forward their logs to.</p>
+
+<ul>
+<li><p><a href="https://www.loggly.com/">Sign up</a> for loggly.  Also free.</p></li>
+<li><p>Put your personal API key into etcd (run from any host):</p></li>
+</ul>
+
+<pre><code>etcdctl set /logapikey XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+</code></pre>
+
+<ul>
+<li><p>Fork <a href="https://github.com/danielnbarbosa/docker-loggly-agent">danielnbarbosa/docker-loggly-agent</a> github repo via the web UI.</p></li>
+<li><p>Replace my dockerhub id with your own:</p></li>
+</ul>
+
+<pre><code>sed -i -e "s/danielnbarbosa/YOUR_DOCKERHUB_ID/g" *
+rm *-e
+</code></pre>
+
+<ul>
+<li>Upload and start fleet units:</li>
+</ul>
+
+<pre><code>fleetctl submit loggly-agent@.service
+fleetctl start loggly-agent@{1..3}.service
+</code></pre>
+
+<ul>
+<li>Verify containers started.  There should be one on each host.</li>
+</ul>
+
+<pre><code>fleetctl list-units
+</code></pre>
+
+<ul>
+<li>Test logging from each host, substitute UDP port (49153) as appropriate:</li>
+</ul>
+
+<pre><code>echo netcat:"Host test log" | ncat -u -w 1 127.0.0.1 49153
+</code></pre>
+
+<ul>
+<li>Verify logs are flowing in the Loggly web UI.</li>
+</ul>
+
+<h3>
+<a id="create-elb" class="anchor" href="#create-elb" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create ELB</h3>
+
+<ul>
+<li>Get your default VPC security group:</li>
+</ul>
+
+<pre><code>aws ec2 describe-security-groups | grep SECURITYGROUPS | grep default | awk '{print $6}'
+</code></pre>
+
+<ul>
+<li>Create the ELB passing in the security group id from above:</li>
+</ul>
+
+<pre><code>aws elb create-load-balancer --load-balancer-name=lb-coreos-alpha --listeners Protocol=HTTP,LoadBalancerPort=80,InstanceProtocol=HTTP,InstancePort=80 --availability-zones us-west-1a us-west-1b --security-groups=sg-111aaa5c
+</code></pre>
+
+<ul>
+<li>Get the 3 instances:</li>
+</ul>
+
+<pre><code>aws ec2 describe-instances --filter Name=tag:Name,Values=CoreOS-alpha | grep INSTANCES | awk '{print $8}'
+i-8e1111d1
+i-8e1111d2
+i-8e1111d3
+</code></pre>
+
+<ul>
+<li>Register instances with the ELB ids from above:</li>
+</ul>
+
+<pre><code>aws elb register-instances-with-load-balancer --load-balancer-name lb-coreos-alpha --instances i-8e1111d1i-8e1111d2i-8e1111d3
+</code></pre>
+
+<ul>
+<li>Drop healthy threshold to 2 so it doesn’t take so long for an instance to be brought back in service.  Note that the ELB will remain out of service until we deploy the http container.</li>
+</ul>
+
+<h3>
+<a id="configure-coreos-cluster-security-groups" class="anchor" href="#configure-coreos-cluster-security-groups" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configure CoreOS cluster security groups</h3>
+
+<ul>
+<li>Allow all TCP ports (0-65535) internal to CoreOS security group (will make debugging easier)</li>
+<li>Allow all TCP ports (0-65535) from default VPC (for the ELB and testing various services)</li>
+</ul>
+
+<h3>
+<a id="upload-and-start-nokebit-http-service" class="anchor" href="#upload-and-start-nokebit-http-service" aria-hidden="true"><span class="octicon octicon-link"></span></a>Upload and start noke.bit http service</h3>
+
+<p>Now for the good part, an actual website.  Keep in mind the "Docker Way" (TM) is one service per container and that service runs in the foreground.  That's why if you follow the Dockerfile you'll see that nginx is set to 'daemon off'.  Also take note of how this container uses <a href="https://docs.docker.com/userguide/dockerlinks/">'--link'</a> to link to the loggly logging container.  Using environment variables passed from the loggly container, nginx configures it's logs to be sent via syslog to the loggly container.</p>
+
+<ul>
+<li><p>Fork <a href="https://github.com/danielnbarbosa/docker-noke-nginx">danielnbarbosa/docker-noke-nginx</a> repo via the web UI</p></li>
+<li><p>Replace my dockerhub id with your own:</p></li>
+</ul>
+
+<pre><code>sed -i -e "s/danielnbarbosa/YOUR_DOCKERHUB_ID/g" *
+rm *-e
+</code></pre>
+
+<ul>
+<li>Upload and start fleet units:</li>
+</ul>
+
+<pre><code>fleetctl submit noke-nginx@.service
+fleetctl start noke-nginx@{1..3}.service
+</code></pre>
+
+<ul>
+<li>Verify containers started.  There should be one on each host.</li>
+</ul>
+
+<pre><code>fleetctl list-units
+</code></pre>
+
+<h3>
+<a id="setup-dns" class="anchor" href="#setup-dns" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup DNS</h3>
+
+<p>This part I did all through the AWS web console, but you could do it via the command line tools if you wanted.  Also you'll have to pick your own domain name.  Feel free to forego the whole .bit thing if you don't want to bother with registering a .bit domain.</p>
+
+<ul>
+<li>register noke.bit domain in route53</li>
+<li>point root A record alias to ELB</li>
+</ul>
+
+<h3>
+<a id="register-your-domain-name" class="anchor" href="#register-your-domain-name" aria-hidden="true"><span class="octicon octicon-link"></span></a>Register your domain name</h3>
+
+<p>.bit domains are registered on the namecoin blockchain.  Namecoin is a fork of bitcoin that uses the blockchain as a decentralized store of identity information, including the TLD .bit.  This is pretty cool because it basically acts as a decentralized domain registration service.  Unfortunately it's still a bit complicated to register these domains.  The directions below are for doing it yourself, but there are also <a href="https://dotbit.me/">services</a> that will register them on your behalf, though this kind of defeats the whole decentralization thing.</p>
+
+<ul>
+<li><p><a href="https://github.com/namecoin/namecoin">Download</a> namecoind</p></li>
+<li><p>Build and compile namecoind.</p></li>
+<li><p>Sync the blockchain.  This will take hours to days to complete.</p></li>
+<li><p>Buy some namecoin.  This is still a bit complicated.  You’ll first need to <a href="https://www.coinbase.com">buy some bitcoin</a> and then <a href="https://btc-e.com/">find</a> <a href="https://bter.com/">an</a> <a href="https://www.cryptsy.com/">exchange</a> to exchange your bitcoin for namecoin.  Once you have the namecoin in your local wallet you can use your local namecoind to register a .bit domain (paying a small fee in namecoin for spam prevention).</p></li>
+<li><p><a href="http://dot-bit.org/HowToRegisterAndConfigureBitDomains">Register and update</a> namecoin blockchain with new NS data.  You won't be able to use noke cause that's mine :).</p></li>
+</ul>
+
+<pre><code>namecoind name_update d/noke '{"ns": ["ns-389.awsdns-48.com", "ns-776.awsdns-33.net", "ns-1125.awsdns-12.org", "ns-1695.awsdns-19.co.uk"]}'
+</code></pre>
+
+<p>Don’t forget to restart chrome in case the plugin has locally cached your domain.  Alternatively you can just hack your local hosts file or resolv.conf.</p>
+
+<h3>
+<a id="rebalance-btrfs" class="anchor" href="#rebalance-btrfs" aria-hidden="true"><span class="octicon octicon-link"></span></a>Rebalance btrfs</h3>
+
+<p>btrfs is the default storage driver used by docker.  You'll need to periodically <a href="https://coreos.com/docs/cluster-management/debugging/btrfs-troubleshooting/">rebalance btrfs</a> on the CoreOS hosts to prevent them from running out of filesystem space.  Note that 'df -h' will lie to you, use 'sudo btrfs fi show' instead.</p>
+
+<pre><code>sudo btrfs fi show; sudo btrfs balance start /; sudo btrfs fi show
+</code></pre>
+
+<h3>
+<a id="integrate-circle-ci" class="anchor" href="#integrate-circle-ci" aria-hidden="true"><span class="octicon octicon-link"></span></a>Integrate Circle CI</h3>
+
+<p>CircleCI is the bees knees.  Yes, that's what I said.  It is a super slick continuous integration and deployment tool that also supports building and testing docker containers.</p>
+
+<ul>
+<li><p><a href="https://circleci.com/">Sign up</a> for Circle CI.  It's free for 1 container.</p></li>
+<li><p>Generate a new SSH keypair locally for circleCI to use to access the hosts:</p></li>
+</ul>
+
+<pre><code>ssh-keygen -t rsa -f id_circleci
+</code></pre>
+
+<ul>
+<li>Add public key to ec2 instances:</li>
+</ul>
+
+<pre><code>cat ~/.ssh/id_circleci.pub
+</code></pre>
+
+<p>on each host:</p>
+
+<pre><code>vi ~/.ssh/authorized_keys
+</code></pre>
+
+<ul>
+<li>For each of the docker repos you forked:
+
+<ul>
+<li>add project and follow repo in circle CI</li>
+<li>add private key (generated earlier) to circleCI project</li>
+<li>add dockerhub env vars to circeCI project:</li>
+</ul>
+</li>
+</ul>
+
+<pre><code>    cat ~/.dockercfg
+    DOCKER_EMAIL=XXXXXXXXXXXX
+    DOCKER_AUTH=XXXXXXXXXXXXX
+</code></pre>
+
+<ul>
+<li>Test an infrastructure build + deploy using the docker-dd-agent repo.  Modify a file or two in the repo (like the IP address hardcoded into deploy.sh, cough), then watch CircleCI build and deploy the container:</li>
+</ul>
+
+<pre><code>    cd .../docker-dd-agent
+    vi deploy.sh
+    vi Dockerfile
+
+    git add .
+    git commit -m “testing circleci"
+    git push
+</code></pre>
+
+<ul>
+<li>Test a front-end site build + deploy using the docker-noke-nginx repo.  Modify a file or two in the repo, then watch CircleCI build and deploy the container without taking the site down.  Sweet!</li>
+</ul>
+
+<pre><code>    cd .../docker-noke-nginx
+    vi rolling_deploy.sh
+    vi Dockerfile
+
+    git add .
+    git commit -m “testing circleci"
+    git push
+</code></pre>
+
+<h3>
+<a id="conclusion" class="anchor" href="#conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion</h3>
+
+<p>I had a lot of fun playing around with all these technologies.  Things are moving pretty fast right now in both the docker and the bitcoin ecosystems.  If you have questions or comments on anything here or anything DevOps or Bitcoin related you can find me on twitter <a href="https://twitter.com/danielnbarbosa">@danielnbarbosa</a>.</p>
       </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/danielnbarbosa">danielnbarbosa</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
     </div>
-    <footer>
-      <p>Project maintained by <a href="https://github.com/danielnbarbosa">danielnbarbosa</a></p>
-      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
-    </footer>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-    
+    <script src="javascripts/scale.fix.js"></script>
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-57003251-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
   </body>
 </html>
